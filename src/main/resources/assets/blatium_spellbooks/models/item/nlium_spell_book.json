@@ -1,0 +1,18 @@
+{
+  "parent": "minecraft:item/handheld",
+  "loader": "forge:separate_transforms",
+  "base": {
+    "parent": "irons_spellbooks:item/template_spell_book_model",
+    "textures": {
+      "book": "blatium_spellbooks:item/model/nlium_spell_book"
+    }
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "blatium_spellbooks:item/nlium_spell_book"
+      }
+    }
+  }
+}

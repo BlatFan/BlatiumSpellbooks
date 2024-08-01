@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "blatium_spellbooks:blatium_spell_book",
+    "blatium_spellbooks:nlium_spell_book"
+  ]
+}

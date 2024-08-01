@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "blatium_spellbooks:item/nlium_mage_boots"
+  }
+}

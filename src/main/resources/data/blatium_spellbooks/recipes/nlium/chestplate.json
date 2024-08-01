@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "group": "nlium",
+  "template": {
+    "item": "blatium:nlium_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "blatium_spellbooks:blatium_mage_chestplate"
+  },
+  "addition": {
+    "tag": "forge:ingots/nlium"
+  },
+  "result": {
+    "item": "blatium_spellbooks:nlium_mage_chestplate"
+  }
+}
