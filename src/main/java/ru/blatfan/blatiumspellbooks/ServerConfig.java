@@ -17,12 +17,13 @@ public class ServerConfig {
 
     public static ArmorSetConfig BLATIUM_CONFIG;
     public static ArmorSetConfig NLIUM_CONFIG;
+    public static final ForgeConfigSpec.BooleanValue HELMET, CHESTPLATE, LEGGINGS, BOOTS, FULL_SET;
 
     static {
         BUILDER.push("ArmorConfig");
         BUILDER.comment("Changing armor values requires world restart");
 
-       BLATIUM_CONFIG = defineConfig(BUILDER, "blatium",
+        BLATIUM_CONFIG = defineConfig(BUILDER, "blatium",
                 List.of(4, 7, 9, 4),
                 4,
                 0,
@@ -52,8 +53,17 @@ public class ServerConfig {
                 true,
                 true,
                 true);
-        BUILDER.pop();
-        SPEC = BUILDER.build();
+       BUILDER.pop();
+       BUILDER.push("Armor Damage Immune");
+       
+       HELMET = BUILDER.define("helmet", true);
+       CHESTPLATE = BUILDER.define("chestplate", true);
+       LEGGINGS = BUILDER.define("leggings", true);
+       BOOTS = BUILDER.define("boots", true);
+       FULL_SET = BUILDER.define("full_set", true);
+       
+       BUILDER.pop();
+       SPEC = BUILDER.build();
     }
 
     private static ArmorSetConfig defineConfig(ForgeConfigSpec.Builder builder, String name, List<Integer> defenseValues, int toughness, double knockbackResistance, int maxMana, double spellPower, double manaRegen,
@@ -69,11 +79,11 @@ public class ServerConfig {
         String localizedName = name.substring(0, 1).toUpperCase() + name.substring(1) + "'s ";
         var config = new ArmorSetConfig(
                 builder.comment(localizedName + "Armor Values, in the form of [boots, leggings, chestplate, helmet]. Default: " + defenseValues).defineList("armorValues", () -> defenseValues, (x) -> true),
-                builder.comment(localizedName + "Armor Toughness. Default: " + toughness).define("toughness", toughness),
-                builder.comment(localizedName + "Knockback Resistance. Default: " + knockbackResistance).define("knockbackResistance", knockbackResistance),
-                builder.comment(localizedName + "Max Mana. Default: " + maxMana).define("maxMana", maxMana),
-                builder.comment(localizedName + String.format("Spell Power. Default: %s (+%s%%)", spellPower, (int) (spellPower * 100))).define("spellPower", spellPower),
-                builder.comment(localizedName + String.format("Mana Regen. Default: %s", manaRegen)).define("manaRegen", manaRegen),
+                builder.comment(localizedName + "Armor Toughness. Default: " + toughness).defineInRange("toughness", toughness, 0, Integer.MAX_VALUE),
+                builder.comment(localizedName + "Knockback Resistance. Default: " + knockbackResistance).defineInRange("knockbackResistance", knockbackResistance, 0, Float.MAX_VALUE),
+                builder.comment(localizedName + "Max Mana. Default: " + maxMana).defineInRange("maxMana", maxMana, 0, Integer.MAX_VALUE),
+                builder.comment(localizedName + String.format("Spell Power. Default: %s (+%s%%)", spellPower, (int) (spellPower * 100))).defineInRange("spellPower", spellPower, 0, Float.MAX_VALUE),
+                builder.comment(localizedName + String.format("Mana Regen. Default: %s", manaRegen)).defineInRange("manaRegen", manaRegen, 0, Float.MAX_VALUE),
                 builder.comment(localizedName + String.format("Helmet Prevents Drowning. Default: %s", helmetPreventsDrowning)).define("helmetPreventsDrowning", helmetPreventsDrowning),
                 builder.comment(localizedName + String.format("Helmet Prevents Elytra Damage. Default: %s", helmetPreventsElytraDamage)).define("helmetPreventsElytraDamage", helmetPreventsElytraDamage),
                 builder.comment(localizedName + String.format("Chestplate Prevents Fire Damage. Default: %s", chestplatePreventsFire)).define("chestplatePreventsFire", chestplatePreventsFire),
@@ -89,19 +99,19 @@ public class ServerConfig {
 
     public record ArmorSetConfig(
             ForgeConfigSpec.ConfigValue<List<? extends Integer>> defenseValues,
-            ForgeConfigSpec.ConfigValue<? extends Integer> toughness,
-            ForgeConfigSpec.ConfigValue<? extends Double> knockbackResistance,
-            ForgeConfigSpec.ConfigValue<? extends Integer> maxMana,
-            ForgeConfigSpec.ConfigValue<? extends Double> spellPower,
-            ForgeConfigSpec.ConfigValue<? extends Double> manaRegen,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> helmetPreventsDrowning,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> helmetPreventsElytraDamage,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> chestplatePreventsFire,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> chestplatePreventsDragonBreath,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> leggingsPreventWither,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> leggingsPreventLevitation,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> bootsPreventFallDamage,
-            ForgeConfigSpec.ConfigValue<? extends Boolean> makesPiglinsNeutral
+            ForgeConfigSpec.IntValue toughness,
+            ForgeConfigSpec.DoubleValue knockbackResistance,
+            ForgeConfigSpec.IntValue maxMana,
+            ForgeConfigSpec.DoubleValue spellPower,
+            ForgeConfigSpec.DoubleValue manaRegen,
+            ForgeConfigSpec.BooleanValue helmetPreventsDrowning,
+            ForgeConfigSpec.BooleanValue helmetPreventsElytraDamage,
+            ForgeConfigSpec.BooleanValue chestplatePreventsFire,
+            ForgeConfigSpec.BooleanValue chestplatePreventsDragonBreath,
+            ForgeConfigSpec.BooleanValue leggingsPreventWither,
+            ForgeConfigSpec.BooleanValue leggingsPreventLevitation,
+            ForgeConfigSpec.BooleanValue bootsPreventFallDamage,
+            ForgeConfigSpec.BooleanValue makesPiglinsNeutral
     ) {
         public double getDefenseFor(EquipmentSlot slot) {
             if (defenseValues.get().size() != 4) {

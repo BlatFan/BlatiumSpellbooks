@@ -6,6 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import ru.blatfan.blatiumspellbooks.ServerConfig;
 import ru.blatfan.blatiumspellbooks.item.ModArmorMaterial;
 import ru.blatfan.blatiumspellbooks.item.WizardArmorItem;
 
@@ -18,7 +19,7 @@ public class ArmorEvents {
 	public static void onPlayerFall(LivingFallEvent event) {
 		Item boots = event.getEntity().getItemBySlot(EquipmentSlot.FEET).getItem();
 		
-		if(boots instanceof WizardArmorItem)
+		if(boots instanceof WizardArmorItem && ServerConfig.BOOTS.get())
 			event.setCanceled(true);
 	}
 
@@ -32,7 +33,7 @@ public class ArmorEvents {
 			Item leggings = event.getEntity().getItemBySlot(EquipmentSlot.LEGS).getItem();
 			Item boots = event.getEntity().getItemBySlot(EquipmentSlot.FEET).getItem();
 			
-			if (helmet instanceof WizardArmorItem) {
+			if (helmet instanceof WizardArmorItem && ServerConfig.HELMET.get()) {
 				if (event.getSource().is(DamageTypes.FLY_INTO_WALL)) {
 					event.setCanceled(true);
 				}
@@ -41,13 +42,13 @@ public class ArmorEvents {
 					event.setCanceled(true);
 				}
 			}
-			if (chestplate instanceof WizardArmorItem) {
+			if (chestplate instanceof WizardArmorItem && ServerConfig.CHESTPLATE.get()) {
 				if ((event.getSource().is(DamageTypes.IN_FIRE)) || (event.getSource().is(DamageTypes.ON_FIRE)) || (event.getSource().is(DamageTypes.LAVA)) || (event.getSource().is(DamageTypes.HOT_FLOOR))) {
 					event.getEntity().clearFire();
 					event.setCanceled(true);
 				}
 			}
-			if (leggings instanceof WizardArmorItem) {
+			if (leggings instanceof WizardArmorItem && ServerConfig.LEGGINGS.get()) {
 				if (event.getSource().is(DamageTypes.EXPLOSION)) {
 					event.setCanceled(true);
 				}
@@ -56,7 +57,7 @@ public class ArmorEvents {
 			if(helmet instanceof WizardArmorItem h &&
 				chestplate instanceof WizardArmorItem c &&
 				leggings instanceof WizardArmorItem l &&
-				boots instanceof WizardArmorItem b){
+				boots instanceof WizardArmorItem b && ServerConfig.FULL_SET.get()){
 				if(h.getMaterial()== ModArmorMaterial.BLATIUM &&
 					c.getMaterial()==ModArmorMaterial.BLATIUM &&
 					l.getMaterial()==ModArmorMaterial.BLATIUM &&

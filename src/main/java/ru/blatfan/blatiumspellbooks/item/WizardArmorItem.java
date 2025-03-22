@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import io.redspace.ironsspellbooks.api.spells.IPresetSpellContainer;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -12,8 +13,13 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.blatfan.blatiumspellbooks.BlatiumSpellbooks;
+import ru.blatfan.blatiumspellbooks.ServerConfig;
 import ru.blatfan.blatiumspellbooks.client.armor.GenericArmorModel;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -25,21 +31,38 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class WizardArmorItem extends ArmorItem implements GeoItem, IPresetSpellContainer {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-
-    //Shadowing
     private final ModArmorMaterial material;
 
     public WizardArmorItem(ModArmorMaterial material, Type type) {
-        this(material, type, Rarity.EPIC);
+        this(material, type, material== ModArmorMaterial.BLATIUM ? BlatiumSpellbooks.RARITY_BLATIUM : BlatiumSpellbooks.RARITY_NLIUM);
     }
 
     public WizardArmorItem(ModArmorMaterial material, Type type, Rarity rarity) {
         super(material, type, new Properties().stacksTo(1).fireResistant().rarity(rarity));
         this.material = material;
+    }
+    
+    @Override
+    public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> tooltips, TooltipFlag tooltipFlag) {
+        tooltips.add(Component.empty());
+        tooltips.add(Component.translatable("tooltip.blatium.unbreakable").withStyle(style -> style.withColor(material== ModArmorMaterial.BLATIUM ? BlatiumSpellbooks.COLOR_BLATIUM : BlatiumSpellbooks.COLOR_NLIUM)));
+        if(ServerConfig.FULL_SET.get())tooltips.add(Component.translatable("tooltip.blatium.full_set."+material.getName())
+            .withStyle(style -> style.withColor(material== ModArmorMaterial.BLATIUM ? BlatiumSpellbooks.COLOR_BLATIUM : BlatiumSpellbooks.COLOR_NLIUM)));
+        
+        if(getType()==Type.HELMET && !ServerConfig.HELMET.get()) return;
+        if(getType()==Type.CHESTPLATE && !ServerConfig.CHESTPLATE.get()) return;
+        if(getType()==Type.LEGGINGS && !ServerConfig.LEGGINGS.get()) return;
+        if(getType()==Type.BOOTS && !ServerConfig.BOOTS.get()) return;
+        
+        tooltips.add(Component.empty());
+        tooltips.add(Component.translatable("tooltip.blatium."+getType().toString().toLowerCase()).withStyle(style -> style.withColor(material== ModArmorMaterial.BLATIUM ? BlatiumSpellbooks.COLOR_BLATIUM : BlatiumSpellbooks.COLOR_NLIUM)));
+        
+        super.appendHoverText(itemStack, level, tooltips, tooltipFlag);
     }
 
     @Override
@@ -93,14 +116,9 @@ public class WizardArmorItem extends ArmorItem implements GeoItem, IPresetSpellC
 
             @Override
             public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                if (this.renderer == null) {
+                if (this.renderer == null)
                     this.renderer = new GeoArmorRenderer<>(new GenericArmorModel<>());
-                }
-
-                // This prepares our GeoArmorRenderer for the current render frame.
-                // These parameters may be null however, so we don't do anything further with them
                 this.renderer.prepForRender(livingEntity, itemStack, equipmentSlot, original);
-
                 return this.renderer;
             }
         });
